@@ -115,11 +115,23 @@ if not df.empty:
     # Maps to: Integrate automation, ETL / ELT of data
     # ----------------------------------------------------------------------
 
-    # Select the columns for the final analysis table (as defined in the Data Dictionary)
+    # Select the columns for the final analysis table (as defined in the Data Dictionary AND for visualization needs)
     df_final = df[[
-        'Application_ID', 'Region', 'Risk_Band', 'Applied_Amount', 'Status',
-        'Date_Submitted', 'Time_to_Approve_Hrs_Clean', 'Efficiency_Flag',
-        'BSA_Risk_Level', 'Customer_Age', 'Is_High_Risk'
+        'Application_ID',
+        'Region',
+        'Risk_Band',
+        'Applied_Amount',
+        'Status',
+        'Date_Submitted',
+        'Time_to_Approve_Hrs_Clean',
+        'Efficiency_Flag',
+        'BSA_Risk_Level',
+        'Customer_Age',
+        'Is_High_Risk',
+        # <<< CRITICAL ADDITION: Re-including source columns for risk review >>>
+        'Risk_Score_Raw',
+        'Transaction_Flags'
+        # <<< END CRITICAL ADDITION >>>
     ]].copy()
 
     # Define the destination table
