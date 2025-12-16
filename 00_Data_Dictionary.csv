@@ -1,0 +1,14 @@
+Field Name,Data Type,Origin,Description,Transformation Logic/Notes,Mapping to FNBT Objective
+Application_ID,INT64,Synthetic,Unique identifier for each personal loan application.,Primary key.,Data Integrity
+Region,STRING,Synthetic,Geographic region of the application (e.g., Killeen, Waco).,Cleaned: TRIM() applied in S02_SQL_Base_Analysis_View.,Reporting/Geospatial Analysis
+Risk_Score_Raw,INT64,Synthetic,Applicant's raw credit score (simulated FICO range).,NA,Core Risk Metric
+Applied_Amount,FLOAT64,Synthetic,The requested personal loan amount.,NA,Core Business Metric
+Status,STRING,Synthetic,Current status of the application (e.g., Approved, Denied, Pending_Review).,NA,Efficiency Reporting
+Date_Submitted,TIMESTAMP,Synthetic,Date and time the application was submitted.,NA,Time-Series Analysis
+Time_to_Approve_Hrs,FLOAT64,Synthetic,The time taken (in hours) from submission to final status.,Missing values (NA) filled with a placeholder (999.0) in SQL ETL to handle 'Pending_Review' applications.,Key Efficiency Metric
+Transaction_Flags,STRING,Synthetic,Compliance-related flags indicating potential unusual activity (e.g., Suspicious_ACH).,NA,Compliance/Risk Reporting
+Customer_Age,INT64,Synthetic,Age of the loan applicant.,NA,Demographic Analysis
+Risk_Band,STRING,SQL (Derived),Categorical grouping of the raw risk score.,Derived in S02_SQL_Base_Analysis_View: A_Low_Risk (>=740), B_Med_Risk (670-739), C_High_Risk (<670).,Stakeholder Communication
+Time_to_Approve_Hrs_Clean,FLOAT64,SQL (Derived),Cleaned version of Time_to_Approve_Hrs.,Derived in S02_SQL_Base_Analysis_View: Uses COALESCE() to handle NULLs, substituting 999.0 for missing values.,Data Quality/ETL
+Efficiency_Flag,STRING,Python (Derived),Flag indicating if the approval process met the 24-hour target.,Derived in P01_Loan_Risk_Analysis_Python.ipynb: 'On_Target' or 'Needs_Review'.,Operational Efficiency Analysis
+BSA_Risk_Level,STRING,Python (Derived),Final risk assessment for compliance follow-up.,Derived in P01_Loan_Risk_Analysis_Python.ipynb: 'High_Risk_Anomaly' or 'Low_Risk_Normal' based on Isolation Forest model and Transaction_Flags.,Risk/Compliance Analysis
