@@ -1,11 +1,11 @@
--- S02_SQL_Base_Analysis_View.sql
+-- S02_SQL_Base_Analysis_View.sql (CORRECTED to include Customer_Age)
 -- Description: Optimized SQL for initial cleaning, transformation, and creating the
--- Loan_Analysis_Base table. This completes the first phase of ETL/Data Preparation.
+-- Loan_Analysis_Base table, now correctly including the 'Customer_Age' column.
 -- Project ID: driiiportfolio
 
 -----------------------------------------------------------
 -- 1. Optimized ETL Query to Create the Base Analysis Table
--- Maps to: Integrate automation, ETL / ELT of data; Review department reports for accuracy.
+-- Fix: Added t1.Customer_Age to the SELECT list.
 -----------------------------------------------------------
 CREATE OR REPLACE TABLE driiiportfolio.FNBT_Analysis.Loan_Analysis_Base AS
 SELECT
@@ -16,20 +16,20 @@ SELECT
     t1.Status,
     t1.Date_Submitted,
     t1.Transaction_Flags,
+    t1.Customer_Age, -- <<< CRITICAL ADDITION, MISSING IN PREVIOUS RUN >>>
 
     -- Handling of Risk Score (Data Integrity: Filter out nulls/errors in the WHERE clause)
     t1.Risk_Score_Raw,
 
     -- Feature Engineering: Create a categorical risk band (Segmentation)
     CASE
-        WHEN t1.Risk_Score_Raw IS NULL THEN 'D_Missing_Risk' -- Handle the very few nulls
+        WHEN t1.Risk_Score_Raw IS NULL THEN 'D_Missing_Risk'
         WHEN t1.Risk_Score_Raw >= 740 THEN 'A_Low_Risk'
         WHEN t1.Risk_Score_Raw BETWEEN 670 AND 739 THEN 'B_Med_Risk'
         ELSE 'C_High_Risk'
     END AS Risk_Band,
 
     -- Handling Missing Time-to-Approve (Data Integrity & ETL for 'Pending_Review')
-    -- COALESCE replaces NULLs with a known placeholder (999.0) for consistent downstream processing.
     COALESCE(t1.Time_to_Approve_Hrs, 999.0) AS Time_to_Approve_Hrs_Clean,
 
     -- Extract Day of Week from Timestamp for deeper trend analysis
